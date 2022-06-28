@@ -2,72 +2,69 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Space_Travel
+namespace Phone_Shop
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            List<string> command = Console.ReadLine().Split("||").ToList();
+            List<string> phones = Console.ReadLine().Split(", ").ToList();
 
-            int fuel = int.Parse(Console.ReadLine());
-            int ammo = int.Parse(Console.ReadLine());
-
-            for (int i = 0; i < command.Count; i++)
+            while (true)
             {
-                string[] strings = command[i].Split(' ');
-                string action = strings[0];
+                List<string> command = Console.ReadLine().Split().ToList();
+
+                string action = command[0];
+
+                if (action == "End")
+                {
+                    Console.WriteLine(string.Join(", ", phones));
+                    return;
+                }
+
+                string model = command[2];
 
                 switch (action)
                 {
-                    case "Travel":
-                        int token = int.Parse(strings[1]);
-                        fuel -= token;
-                        if (fuel >= 0)
+                    case "Add":
+                        if (!phones.Contains(model))
                         {
-                            Console.WriteLine($"The spaceship travelled {token} light-years.");
+                            phones.Add(model);
                         }
                         break;
 
-                    case "Enemy":
-                        token = int.Parse(strings[1]);
-                        if (ammo >= token)
+                    case "Remove":
+                        if (phones.Contains(model))
                         {
-                            ammo -= token;
-                            Console.WriteLine($"An enemy with {token} armour is defeated.");
+                            phones.Remove(model);
                         }
-                        else
+                        break;
+
+                    case "Bonus":
+                        List<string> bonus = command[3].Split(":").ToList();
+                        string oldPhone = bonus[0];
+                        string newPhone = bonus[1];
+
+                        if (phones.Contains(oldPhone))
                         {
-                            fuel -= token * 2;
-                            if (fuel >= 0) // >=
+
+                            for (int i = 0; i < phones.Count; i++)
                             {
-                                Console.WriteLine($"An enemy with {token} armour is outmaneuvered.");
+                                if (oldPhone == phones[i])
+                                {
+                                    phones.Insert(i + 1, newPhone);
+                                }
                             }
                         }
                         break;
 
-                    case "Repair":
-                        token = int.Parse(strings[1]);
-                        fuel += token;
-                        ammo += token * 2;
-
-                        Console.WriteLine($"Ammunitions added: {token * 2}.");
-                        Console.WriteLine($"Fuel added: {token}.");
-
+                    case "Last":
+                        if (phones.Contains(model))
+                        {
+                            phones.Remove(model);
+                            phones.Add(model);
+                        }
                         break;
-
-                    case "Titan":
-
-                        Console.WriteLine($"You have reached Titan, all passengers are safe.");
-
-                        return;
-
-                }
-
-                if (fuel < 0)
-                {
-                    Console.WriteLine("Mission failed.");
-                    return;
                 }
             }
         }
