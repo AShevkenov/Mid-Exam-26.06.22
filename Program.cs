@@ -1,62 +1,74 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace The_Hunting_Game
+namespace Space_Travel
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            int daysOfTheAdv = int.Parse(Console.ReadLine());
-            int numberOfPlayers = int.Parse(Console.ReadLine());
-            double groupEnergy = double.Parse(Console.ReadLine());
-            double waterPerDay = double.Parse(Console.ReadLine());
-            double foodPerDay = double.Parse(Console.ReadLine());
+            List<string> command = Console.ReadLine().Split("||").ToList();
 
+            int fuel = int.Parse(Console.ReadLine());
+            int ammo = int.Parse(Console.ReadLine());
 
-            double totalWater = daysOfTheAdv * numberOfPlayers * waterPerDay;
-            double totalFood = daysOfTheAdv * numberOfPlayers * foodPerDay;
-
-            double energyLeft = groupEnergy;
-
-            int firstCounter = 0;
-            int secondCounter = 0;
-            
-            double currentFood = totalFood;
-
-            for (int i = 1; i <= daysOfTheAdv; i++)
+            for (int i = 0; i < command.Count; i++)
             {
-                firstCounter++;
-                secondCounter++;
+                string[] strings = command[i].Split(' ');
+                string action = strings[0];
 
-                double energyLossPerDay = double.Parse(Console.ReadLine());
-
-                energyLeft -= energyLossPerDay;
-
-                if (energyLeft <= 0)
+                switch (action)
                 {
-                    Console.WriteLine($"You will run out of energy. You will be left with {currentFood:f2} food and {totalWater:f2} water.");
+                    case "Travel":
+                        int token = int.Parse(strings[1]);
+                        fuel -= token;
+                        if (fuel >= 0)
+                        {
+                            Console.WriteLine($"The spaceship travelled {token} light-years.");
+                        }
+                        break;
+
+                    case "Enemy":
+                        token = int.Parse(strings[1]);
+                        if (ammo >= token)
+                        {
+                            ammo -= token;
+                            Console.WriteLine($"An enemy with {token} armour is defeated.");
+                        }
+                        else
+                        {
+                            fuel -= token * 2;
+                            if (fuel >= 0) // >=
+                            {
+                                Console.WriteLine($"An enemy with {token} armour is outmaneuvered.");
+                            }
+                        }
+                        break;
+
+                    case "Repair":
+                        token = int.Parse(strings[1]);
+                        fuel += token;
+                        ammo += token * 2;
+
+                        Console.WriteLine($"Ammunitions added: {token * 2}.");
+                        Console.WriteLine($"Fuel added: {token}.");
+
+                        break;
+
+                    case "Titan":
+
+                        Console.WriteLine($"You have reached Titan, all passengers are safe.");
+
+                        return;
+
+                }
+
+                if (fuel < 0)
+                {
+                    Console.WriteLine("Mission failed.");
                     return;
                 }
-
-                if (firstCounter % 2 == 0)
-                {
-                    firstCounter = 0;
-                    energyLeft *= 1.05;
-                    totalWater *= 0.7;
-                }
-
-                if (secondCounter % 3 == 0)
-                {
-                    secondCounter = 0;
-                    currentFood -= currentFood / numberOfPlayers;
-                    energyLeft *= 1.1;
-                }              
-
-            }
-
-            if (energyLeft > 0)
-            {
-                Console.WriteLine($"You are ready for the quest. You will be left with - {energyLeft:f2} energy!");
             }
         }
     }
